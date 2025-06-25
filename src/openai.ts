@@ -26,6 +26,14 @@ export async function generateRentalAgreement(data: {
 }): Promise<string> {
   const prompt = `Generate a comprehensive rental agreement under Indian law with the following details:
 
+CRITICAL FORMATTING REQUIREMENTS:
+- Use ONLY plain text formatting 
+- NO markdown symbols (**, __, *, etc.)
+- NO HTML tags (<strong>, <b>, etc.)
+- Use CAPITAL LETTERS for emphasis and section headers
+- Use proper indentation and numbering for clauses
+- Professional legal document format only
+
 Agreement Date: ${data.agreement_date}
 Agreement Location: ${data.agreement_location}
 
@@ -34,13 +42,13 @@ TENANT: ${data.tenant_name}, Aadhaar: ${data.tenant_aadhaar}, Address: ${data.te
 
 Property: ${data.property_address}
 Term: ${data.tenancy_months} months (${data.lease_start} to ${data.lease_end})
-Monthly Rent: ₹${data.monthly_rent}
-Security Deposit: ₹${data.security_deposit}
+Monthly Rent: Rs. ${data.monthly_rent}
+Security Deposit: Rs. ${data.security_deposit}
 Payment Date: ${data.rent_payment_date} of each month
 Maintenance: ${data.maintenance_included ? "Included in rent" : "Tenant responsible"}
 Special Clauses: ${data.special_clauses || "None"}
 
-Create a professional rental agreement following Indian legal standards with all standard clauses including term of tenancy, rent and security deposit, utilities and maintenance, use of property, termination and notice, repairs and alterations, entry and inspection, default and eviction, use of premises, furnishings and appliances, renewal, maintenance charges, notice of absence, dispute resolution, force majeure, indemnity, and notices. Format with proper legal language and structure.`;
+Create a professional rental agreement following Indian legal standards. Use plain text formatting with proper legal structure, clear numbering, and appropriate use of capital letters for emphasis. Include all essential clauses for Indian rental agreements.`;
 
   try {
     const response = await openai.chat.completions.create({
@@ -84,100 +92,67 @@ function generateDemoAgreement(data: {
   const rentInWords = numberToWords(data.monthly_rent);
   const depositInWords = numberToWords(data.security_deposit);
   
-  return `
-<h2 style="text-align: center; color: #1a365d; margin-bottom: 30px; text-transform: uppercase; font-weight: bold; border-bottom: 2px solid #1a365d; padding-bottom: 10px;">RENT AGREEMENT</h2>
+  return `                                RENTAL AGREEMENT
 
-<p style="margin-bottom: 15px; text-align: justify;">This rent agreement ("Agreement") is made on ${new Date(data.agreement_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} at ${data.agreement_location}</p>
+This Rental Agreement is made on ${data.agreement_date} at ${data.agreement_location} between:
 
-<p style="margin-bottom: 15px; font-weight: bold;">BETWEEN:</p>
-<p style="margin-bottom: 10px; font-weight: bold;">LANDLORD(s)</p>
-<p style="margin-bottom: 15px; text-align: justify;">${data.landlord_name} having PAN Number: ${data.landlord_pan}, resident of ${data.landlord_address}...(hereinafter referred to as the "LANDLORD") which expression shall, unless repugnant to the context, mean and include his heirs, executors, and permitted assigns.</p>
+LANDLORD (First Party):
+Name: ${data.landlord_name}
+PAN Number: ${data.landlord_pan}
+Address: ${data.landlord_address}
 
-<p style="margin-bottom: 10px; font-weight: bold;">AND:</p>
-<p style="margin-bottom: 10px; font-weight: bold;">TENANT(s)</p>
-<p style="margin-bottom: 15px; text-align: justify;">${data.tenant_name} having Aadhaar Number: ${data.tenant_aadhaar}, resident of ${data.tenant_address}...(hereinafter referred to as the "TENANT") which expression shall, unless repugnant to the context, mean and include his heirs, executors, and permitted assigns.</p>
+TENANT (Second Party):
+Name: ${data.tenant_name}
+Aadhaar Number: ${data.tenant_aadhaar}
+Address: ${data.tenant_address}
 
-<p style="margin-bottom: 15px; font-weight: bold;">WHEREAS</p>
-<p style="margin-bottom: 15px; text-align: justify;">The said LANDLORD(s) is sole and absolute (Landlord/Landlady) of the Property: ${data.property_address} (hereinafter referred as "PROPERTY"), and the above said TENANT(s) has contacted the LANDLORD(s) to take the property on rent and the LANDLORD(s) has agreed to let out the Property to the above TENANT(s) on the below-given terms and conditions.</p>
+WHEREAS
 
-<p style="margin-bottom: 20px; font-weight: bold;">NOW, THIS DEED FURTHER WITNESSETH AND AGREED BY AND BETWEEN THE SAID PARTIES AS FOLLOWS:</p>
+The said LANDLORD is sole and absolute owner of the Property: ${data.property_address} (hereinafter referred as "PROPERTY"), and the above said TENANT has contacted the LANDLORD to take the property on rent and the LANDLORD has agreed to let out the Property to the above TENANT on the below-given terms and conditions.
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">1. Term of Tenancy:</p>
-  <p style="margin-left: 20px; text-align: justify;">The term of this agreement shall be for ${data.tenancy_months} months, commencing from ${data.lease_start} and ending on ${data.lease_end}.</p>
-</div>
+NOW, THIS DEED FURTHER WITNESSETH AND AGREED BY AND BETWEEN THE SAID PARTIES AS FOLLOWS:
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">2. Rent and Security Deposit:</p>
-  <div style="margin-left: 20px;">
-    <p style="margin-bottom: 8px;"><strong>a.</strong> The monthly rent for the property is <strong>₹${data.monthly_rent.toLocaleString('en-IN')} (${rentInWords} Rupees only)</strong> per month.</p>
-    <p style="margin-bottom: 8px;"><strong>b.</strong> The tenant agrees to pay the monthly rent on or before <strong>${data.rent_payment_date}${getOrdinalSuffix(data.rent_payment_date)} day</strong> of each month.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>c.</strong> A security deposit of <strong>₹${data.security_deposit.toLocaleString('en-IN')} (${depositInWords} Rupees only)</strong> has been paid by the tenant to the landlord and this amount will carry no interest. The security deposit shall be refunded at the end of the tenancy period, subject to deductions for any damages or outstanding dues.</p>
-  </div>
-</div>
+1. TERM OF TENANCY:
+   The term of this agreement shall be for ${data.tenancy_months} months, commencing from ${data.lease_start} and ending on ${data.lease_end}.
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">3. Utilities and Maintenance:</p>
-  <div style="margin-left: 20px;">
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>a.</strong> The tenant will be responsible for paying utility bills including electricity, water, gas, and any other applicable charges.</p>
-    <p style="margin-bottom: 8px;"><strong>b.</strong> ${data.maintenance_included ? 'Society Maintenance charges if any, are included in the monthly rent paid by the Tenant.' : 'Society maintenance charges shall be borne by the tenant separately.'}</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>c.</strong> The tenant shall maintain the property in good condition and shall be responsible for any damages caused beyond normal wear and tear.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>d.</strong> The landlord shall be responsible for regular maintenance and repairs, including plumbing, electrical, and structural maintenance.</p>
-  </div>
-</div>
+2. RENT AND SECURITY DEPOSIT:
+   a. The monthly rent for the property is Rs. ${data.monthly_rent.toLocaleString('en-IN')} (${rentInWords} Rupees only) per month.
+   b. The tenant agrees to pay the monthly rent on or before ${data.rent_payment_date}${getOrdinalSuffix(data.rent_payment_date)} day of each month.
+   c. A security deposit of Rs. ${data.security_deposit.toLocaleString('en-IN')} (${depositInWords} Rupees only) has been paid by the tenant to the landlord and this amount will carry no interest. The security deposit shall be refunded at the end of the tenancy period, subject to deductions for any damages or outstanding dues.
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">4. Use of Property:</p>
-  <div style="margin-left: 20px;">
-    <p style="margin-bottom: 8px;"><strong>a.</strong> The property shall be used solely for residential purposes by the tenant.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>b.</strong> Subletting, assigning, or transferring the property to any third party, in whole or in part, without the prior written consent of the landlord is strictly prohibited. Any subletting or assignment requires the landlord's explicit written approval.</p>
-  </div>
-</div>
+3. UTILITIES AND MAINTENANCE:
+   a. The tenant will be responsible for paying utility bills including electricity, water, gas, and any other applicable charges.
+   b. ${data.maintenance_included ? 'Society Maintenance charges if any, are included in the monthly rent paid by the Tenant.' : 'Society maintenance charges shall be borne by the tenant separately.'}
+   c. The tenant shall maintain the property in good condition and shall be responsible for any damages caused beyond normal wear and tear.
+   d. The landlord shall be responsible for regular maintenance and repairs, including plumbing, electrical, and structural maintenance.
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">5. Termination and Notice:</p>
-  <div style="margin-left: 20px;">
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>a.</strong> Either party may terminate this agreement by providing 30 days written notice to the other party through any suitable channel.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>b.</strong> Upon termination, the tenant shall return the property in the same condition as at the beginning of the tenancy, minus normal wear and tear.</p>
-  </div>
-</div>
+4. USE OF PROPERTY:
+   a. The property shall be used solely for residential purposes by the tenant.
+   b. Subletting, assigning, or transferring the property to any third party, in whole or in part, without the prior written consent of the landlord is strictly prohibited.
 
-<div style="margin-bottom: 20px;">
-  <p style="font-weight: bold; margin-bottom: 10px;">6. Additional Terms:</p>
-  <div style="margin-left: 20px;">
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>a.</strong> The tenant shall promptly inform the landlord of any necessary repairs or maintenance issues.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>b.</strong> The landlord has the right to enter the property with prior notice to inspect its condition or make repairs.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>c.</strong> Failure to make regular rent payments or violation of terms can result in eviction.</p>
-    <p style="margin-bottom: 8px; text-align: justify;"><strong>d.</strong> All notices and communications shall be in writing and shall be deemed properly delivered if sent via registered post.</p>
-  </div>
-</div>
+5. TERMINATION AND NOTICE:
+   a. Either party may terminate this agreement by providing 30 days written notice to the other party.
+   b. Upon termination, the tenant shall return the property in the same condition as at the beginning of the tenancy, minus normal wear and tear.
 
-${data.special_clauses ? `<div style="margin-bottom: 20px;"><p style="font-weight: bold; margin-bottom: 10px;">7. Special Clauses:</p><div style="margin-left: 20px;"><p style="text-align: justify;">${data.special_clauses}</p></div></div>` : ''}
+6. ADDITIONAL TERMS:
+   a. The tenant shall promptly inform the landlord of any necessary repairs or maintenance issues.
+   b. The landlord has the right to enter the property with prior notice to inspect its condition or make repairs.
+   c. Failure to make regular rent payments or violation of terms can result in eviction.
+   d. All notices and communications shall be in writing and shall be deemed properly delivered if sent via registered post.
 
-<p style="margin: 30px 0 40px 0; text-align: justify;">In Witness Whereof, the Parties hereto have set their hands and signatures on the date and year first above mentioned.</p>
+${data.special_clauses ? `7. SPECIAL CLAUSES:\n   ${data.special_clauses}\n\n` : ''}
 
-<div style="margin-top: 50px;">
-  <p style="font-weight: bold; margin-bottom: 15px;">Landlord(s) Signatures</p>
-  <div style="border: 2px solid #000; padding: 20px; margin-bottom: 30px; min-height: 120px; position: relative;">
-    <div style="position: absolute; top: 10px; left: 10px; background: #fff9c4; padding: 8px 15px; font-weight: bold; border: 1px solid #ddd;">LandlordSign</div>
-    <div style="position: absolute; bottom: 10px; left: 10px; font-weight: bold;">
-      ${data.landlord_name} resident of ${data.landlord_address.split(',')[0]}, having PAN Number: ${data.landlord_pan}
-    </div>
-  </div>
-  
-  <p style="font-weight: bold; margin-bottom: 15px;">Tenant(s) Signatures</p>
-  <div style="border: 2px solid #000; padding: 20px; margin-bottom: 30px; min-height: 120px; position: relative;">
-    <div style="position: absolute; top: 10px; left: 10px; background: #fff9c4; padding: 8px 15px; font-weight: bold; border: 1px solid #ddd;">TenantSign</div>
-    <div style="position: absolute; bottom: 10px; left: 10px; font-weight: bold;">
-      ${data.tenant_name} resident of ${data.tenant_address.split(',')[0]}, having Aadhaar Number: ${data.tenant_aadhaar}
-    </div>
-  </div>
-</div>
+In Witness Whereof, the Parties hereto have set their hands and signatures on the date and year first above mentioned.
 
-<p style="margin-top: 30px; font-size: 12px; color: #666; text-align: center;">
-<em>Generated by Riplico Legal AI Platform on ${new Date().toLocaleDateString('en-IN')}</em>
-</p>
-  `.trim();
+
+LANDLORD SIGNATURE:                           TENANT SIGNATURE:
+
+_____________________                         _____________________
+${data.landlord_name}                           ${data.tenant_name}
+PAN: ${data.landlord_pan}                       Aadhaar: ${data.tenant_aadhaar}
+
+
+Generated by Riplico Legal AI Platform on ${new Date().toLocaleDateString('en-IN')}`;
 }
 
 function numberToWords(num: number): string {
